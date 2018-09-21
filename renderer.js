@@ -1,3 +1,13 @@
-// This file is required by the index.html file and will
-// be executed in the renderer process for that window.
-// All of the Node.js APIs are available in this process.
+window.onclick = () => {
+  const webview = document.querySelector("webview")
+  if (webview.isLoading()) {
+    webview.addEventListener("dom-ready", () => {
+      webview.openDevTools()
+    })
+  } else {
+    webview.openDevTools()
+  }
+}
+
+const { webFrame } = require("electron")
+webFrame.registerURLSchemeAsPrivileged("bug", { bypassCSP: false })
