@@ -4,20 +4,20 @@ window.onclick = async ({ target }) => {
   switch (target.getAttribute("data-case")) {
     case "xhr-string": {
       const result = await writeFile("./text/echo", "hello there string")
-      output.textContent += formatResult(result)
+      output.textContent += await formatResult(result)
       break
     }
     case "xhr-binary": {
       const encoder = new TextEncoder()
       const buffer = encoder.encode("hello there binary")
       const result = await writeFile("./binary/echo", buffer)
-      output.textContent += formatResult(result)
+      output.textContent += await formatResult(result)
       break
     }
     case "xhr-blob": {
       const blob = new Blob(["hello there blob"], { type: "text/plain" })
       const result = await writeFile("./blob/echo", blob)
-      output.textContent += formatResult(result)
+      output.textContent += await formatResult(result)
       break
     }
     case "xhr-form": {
@@ -27,7 +27,23 @@ window.onclick = async ({ target }) => {
       const blob = new Blob(["<b>hello there form</b>"], { type: "text/html" })
       formData.append("data.html", blob)
       const result = await writeFile("./form/echo", formData)
-      output.textContent += formatResult(result)
+      output.textContent += await formatResult(result)
+      break
+    }
+    case "put-fetch": {
+      const result = await fetch("./put-fetch/echo", {
+        method: "PUT",
+        body: "Hi there fetch API"
+      })
+      output.textContent += await formatResult(result)
+      break
+    }
+    case "post-fetch": {
+      const result = await fetch("./post-fetch/echo", {
+        method: "POST",
+        body: "Hi there fetch API"
+      })
+      output.textContent += await formatResult(result)
       break
     }
     default: {
@@ -45,11 +61,11 @@ var writeFile = (url, data) =>
     request.send(data)
   })
 
-var formatResult = result => `
+var formatResult = async result => `
 ------
 status: ${result.status}
 statusText: ${result.statusText}
-textContent:
-${result.responseText}
+body:
+${result.text ? await result.text() : result.responseText}
 ------
 `
