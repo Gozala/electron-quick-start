@@ -28,11 +28,31 @@ exports.register = () => {
 }
 
 exports.protocolHandler = (request, respond) => {
-  if (request.url.endsWith("echo")) {
+  console.log(request)
+  if (request.method === "OPTIONS") {
+    respond({
+      statusCode: 204,
+      headers: {
+        "Access-Control-Allow-Origin": request.headers["Origin"],
+        "Access-Control-Allow-Methods":
+          request.headers["Access-Control-Request-Method"],
+        "Access-Control-Allow-Headers":
+          request.headers["Access-Control-Request-Headers"] || "*",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      data: createStream("")
+    })
+  } else if (request.url.endsWith("echo")) {
     respond({
       statusCode: 200,
       headers: {
-        "content-type": "application/json"
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": request.headers["Origin"],
+        "Access-Control-Allow-Methods":
+          request.headers["Access-Control-Request-Method"],
+        "Access-Control-Allow-Headers":
+          request.headers["Access-Control-Request-Headers"] || "*",
+        "Access-Control-Allow-Credentials": "true"
       },
       data: createStream(
         JSON.stringify(

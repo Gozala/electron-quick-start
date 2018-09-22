@@ -46,6 +46,14 @@ window.onclick = async ({ target }) => {
       output.textContent += await formatResult(result)
       break
     }
+    case "cors-fetch": {
+      const result = await fetch("bug://corst/fetch/echo", {
+        method: "PUT",
+        body: "Hi there CORS fetch API"
+      })
+      output.textContent += await formatResult(result)
+      break
+    }
     default: {
     }
   }
