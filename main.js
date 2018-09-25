@@ -1,12 +1,14 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require("electron")
 const protocol = require("./protocol")
+const webRequest = require("./web-request")
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
 protocol.setup()
+webRequest.setup()
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 800, height: 600 })
