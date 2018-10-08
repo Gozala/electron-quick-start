@@ -3,7 +3,7 @@ const handler = {
     switch (event.target.id) {
       case "open-button": {
         window.host = window.open("./host.html", "tab")
-        document.querySelector("#log").textContent += `\nWindow opened: ${
+        document.querySelector("#log").textContent += `\nOpened window: ${
           window.host
         }`
         return
@@ -20,3 +20,7 @@ const handler = {
 }
 
 document.addEventListener("click", handler)
+
+document.querySelector("#log").textContent += `\nWindow opener: ${
+  window.opener
+}`
