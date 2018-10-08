@@ -9,7 +9,8 @@
 
 <body>
   <button>Open Content Inspector</button>
-  <webview preload="./webview.js" src="bug://bug/index.html" autosize minwidth="800" minheight="800" style="height: -webkit-fill-available;"></webview>
+  <webview preload="./preload.js" src="./webview.html" webpreferences="nativeWindowOpen=no" autosize minwidth="800"
+    minheight="800" style="height: -webkit-fill-available;"></webview>
 </body>
 
 </html>

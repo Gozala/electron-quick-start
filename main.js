@@ -1,15 +1,19 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require("electron")
-const protocol = require("./protocol")
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-protocol.setup()
 function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 800, height: 600 })
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nativeWindowOpen: true
+    }
+  })
 
   // and load the index.html of the app.
   mainWindow.loadFile("index.html")
@@ -24,6 +28,40 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+
+  mainWindow.webContents.on(
+    "new-window",
+    (event, url, frameName, disposition, options, additionalFeatures) => {
+      console.log(
+        "!!!!!!!!!!!!!!",
+        event,
+        url,
+        frameName,
+        disposition,
+        options,
+        additionalFeatures
+      )
+
+      if (frameName === "tab") {
+        event.preventDefault()
+        const webView = document.createElement("webview")
+        document.appendChild(webView)
+        event.newGuest = BrowserWindow.fromWebContents(webView.getWebContents())
+      }
+
+      if (frameName === "modal") {
+        // open window as modal
+        event.preventDefault()
+        Object.assign(options, {
+          modal: true,
+          parent: mainWindow,
+          width: 100,
+          height: 100
+        })
+        event.newGuest = new BrowserWindow(options)
+      }
+    }
+  )
 }
 
 // This method will be called when Electron has finished

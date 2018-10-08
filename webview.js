@@ -1,8 +1,9 @@
-const { webFrame } = require("electron")
-webFrame.registerURLSchemeAsPrivileged("bug", {
-  bypassCSP: false,
-  allowServiceWorkers: true,
-  supportFetchAPI: true,
-  corsEnabled: true,
-  secure: true
-})
+const handler = {
+  handleEvent(event) {
+    if (event.target.id === "open-button") {
+      let host = window.open("./host.html", "modal")
+    }
+  }
+}
+
+document.addEventListener("click", handler)
