@@ -7,10 +7,11 @@
   <script async defer src="./renderer.js"></script>
 </head>
 
-<body>
-  <button>Open Content Inspector</button>
-  <webview preload="./preload.js" src="./webview.html" webpreferences="nativeWindowOpen=no" autosize minwidth="800"
-    minheight="800" style="height: -webkit-fill-available;"></webview>
+<body style="display: flex; flex-direction: column; position: absolute; height: 100%; width: 100%; margin: 0;">
+  <header style="position: fixed; right: 10px; top: 10px;">
+    <button>Open Content Inspector</button>
+  </header>
+  <webview preload="./preload.js" src="./webview.html" webpreferences="nativeWindowOpen=no" autosize style="display: flex; flex: 1 100%"></webview>
 </body>
 
 </html>
