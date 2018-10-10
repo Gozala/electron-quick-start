@@ -1,22 +1,43 @@
 const handler = {
   handleEvent(event) {
-    switch (event.target.id) {
-      case "open-button": {
-        window.host = window.open("./host.html", "tab")
-        document.querySelector("#log").textContent += `\nWindow opened: ${
-          window.host
-        }`
+    switch (event.type) {
+      case "click": {
+        switch (event.target.id) {
+          case "open-button": {
+            window.host = window.open("./host.html", "tab")
+            document.querySelector("#log").textContent += `\nWindow opened: ${
+              window.host
+            }`
+            return
+          }
+          case "ping-host": {
+            document.querySelector(
+              "#log"
+            ).textContent += `\nPinged host doc: ${host.postMessage(
+              "ping",
+              "*"
+            )}`
+            return
+          }
+          case "close-host": {
+            document.querySelector(
+              "#log"
+            ).textContent += `\nPinged host doc: ${host.close()}`
+            return
+          }
+        }
         return
       }
-      case "update-host": {
-        host.document.body.innerHTML = "<h1>Updated doc</h1>"
-        document.querySelector("#log").textContent += `\nUpdated host doc: ${
-          host.document.body.innerHTML
+      case "message": {
+        document.querySelector("#log").textContent += `\nReceived message: ${
+          event.data
         }`
         return
       }
     }
   }
 }
+
+window.addEventListener("message", handler)
 
 document.addEventListener("click", handler)

@@ -11,8 +11,8 @@
   <header style="position: fixed; right: 10px; top: 10px;">
     <button>Open Content Inspector</button>
   </header>
-  <webview id="host" src="about:blank" webpreferences="nativeWindowOpen=0, preallocateGuestHost" autosize style="display: flex; flex: 1 100%"></webview>
-  <webview id="main" src="./webview.html" webpreferences="nativeWindowOpen=0" autosize style="display: flex; flex: 1 100%"></webview>
+  <webview id="opener" src="./webview.html" webpreferences="nativeWindowOpen=0" autosize style="display: flex; flex: 1 100%"></webview>
+  <webview id="opened" src="about:blank" webpreferences="nativeWindowOpen=0, preallocateGuestHost" autosize style="display: flex; flex: 1 100%"></webview>
 </body>
 
 </html>
