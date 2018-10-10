@@ -1,5 +1,6 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require("electron")
+const { app, BrowserWindow, ipcMain } = require("electron")
+const parseFeaturesString = require("./parse-features-string")
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -11,7 +12,7 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      nativeWindowOpen: true
+      // nativeWindowOpen: true
     }
   })
 
@@ -62,6 +63,8 @@ function createWindow() {
       }
     }
   )
+
+  setupWorkaround(mainWindow)
 }
 
 // This method will be called when Electron has finished
@@ -86,5 +89,109 @@ app.on("activate", function() {
   }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+const setupWorkaround = mainWindow => {
+  let newGuest = null
+
+  mainWindow.webContents.on("did-attach-webview", (event, webContents) => {
+    if (webContents.getLastWebPreferences().preallocateGuestHost) {
+      newGuest = webContents
+    }
+  })
+
+  ipcMain.removeAllListeners("ELECTRON_GUEST_WINDOW_MANAGER_WINDOW_OPEN")
+  ipcMain.on(
+    "ELECTRON_GUEST_WINDOW_MANAGER_WINDOW_OPEN",
+    (event, url, frameName, features) => {
+      if (url == null || url === "") url = "about:blank"
+      if (frameName == null) frameName = ""
+      if (features == null) features = ""
+
+      const options = {}
+
+      const ints = [
+        "x",
+        "y",
+        "width",
+        "height",
+        "minWidth",
+        "maxWidth",
+        "minHeight",
+        "maxHeight",
+        "zoomFactor"
+      ]
+      const webPreferences = [
+        "zoomFactor",
+        "nodeIntegration",
+        "preload",
+        "javascript",
+        "contextIsolation",
+        "webviewTag"
+      ]
+      const disposition = "new-window"
+
+      // Used to store additional features
+      const additionalFeatures = []
+
+      // Parse the features
+      parseFeaturesString(features, function(key, value) {
+        if (value === undefined) {
+          additionalFeatures.push(key)
+        } else {
+          // Don't allow webPreferences to be set since it must be an object
+          // that cannot be directly overridden
+          if (key === "webPreferences") return
+
+          if (webPreferences.includes(key)) {
+            if (options.webPreferences == null) {
+              options.webPreferences = {}
+            }
+            options.webPreferences[key] = value
+          } else {
+            options[key] = value
+          }
+        }
+      })
+      if (options.left) {
+        if (options.x == null) {
+          options.x = options.left
+        }
+      }
+      if (options.top) {
+        if (options.y == null) {
+          options.y = options.top
+        }
+      }
+      if (options.title == null) {
+        options.title = frameName
+      }
+      if (options.width == null) {
+        options.width = 800
+      }
+      if (options.height == null) {
+        options.height = 600
+      }
+
+      for (const name of ints) {
+        if (options[name] != null) {
+          options[name] = parseInt(options[name], 10)
+        }
+      }
+
+      const referrer = { url: "", policy: "default" }
+
+      event.preventDefault()
+      event.newGuest = newGuest
+
+      ipcMain.emit(
+        "ELECTRON_GUEST_WINDOW_MANAGER_INTERNAL_WINDOW_OPEN",
+        event,
+        url,
+        referrer,
+        frameName,
+        disposition,
+        options,
+        additionalFeatures
+      )
+    }
+  )
+}
